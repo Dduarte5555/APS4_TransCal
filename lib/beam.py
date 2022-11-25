@@ -2,11 +2,13 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 from .node import Node
+from .material import Material
 from .tag import Tag
 
 
 class Beam:
     id:int = None
+    material:Material
 
     def __init__(self, node1: Node, node2: Node):
         self.node1 = node1
@@ -28,21 +30,19 @@ class Beam:
 
         return dy / l, dx / l
 
-    @property
-    def deformation(self):
+    def get_deformation(self, u1, u2):
         s, c = self.sin_cos
         vec = [-c, -s, c, s]
-        pos = [self.node1.x, self.node1.y, self.node2.x, self.node2.y]
+        pos = [u1[0], u1[1], u2[0], u2[1]]
 
         return np.dot(vec, pos) / self.length
 
-    @property
-    def tension(self):
-        return self.elasticity * self.deformation
+    def get_tension(self):
+        return self.material.elasticity * self.deformation
 
     @property
     def rigidity(self):
-        rigidity = self.elasticity * self.area / self.length
+        rigidity = self.material.elasticity * self.material.area / self.length
         s, c = self.sin_cos
         a = np.array([ [c, s, 0, 0],
                        [0, 0, c, s], ])
@@ -53,18 +53,25 @@ class Beam:
 
         return np.matmul(salkdjsad, a)
 
-    def define_material(self, elasticity:float, area:float):
-        self.elasticity = elasticity
-        self.area = area
+    def set_material(self, material:Material):
+        material.id = self.id
+        self.material = material
 
     def get_tag(self):
-        return Tag(
-            "elem",
-            eid=self._id,
-            shape="line2",
-            nodes=f"{self.node1._id} {self.node2._id}",
-            truss="true",
-        )
+        tag = Tag(
+                "elem",
+                eid=self.id,
+                shape="line2",
+                nodes=f"{self.node1.id} {self.node2.id}",
+                truss="true",
+            )
+
+        if self.material == None:
+            return tag
+
+        tag = self.material.get_set_tag().append_child(tag)
+
+        return tag
 
     def plot(self, *args, **kwargs):
         mx = (self.node1.x + self.node2.x) / 2

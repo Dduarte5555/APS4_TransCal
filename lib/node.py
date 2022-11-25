@@ -4,19 +4,22 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 from .force import Force
+from .displacement import Displacement
 from .tag import Tag
 
 
 class Node:
     id:int
+    x:float
+    y:float
     forces:List[Force]
-    displacement:List[bool]
+    displacement:Displacement
 
     def __init__(self, x: float, y: float):
-        self.forces = []
-        self.displacement = [False, False]
         self.x = x
         self.y = y
+        self.forces = []
+        self.displacement = Displacement()
 
     def get_distance_from(self, node):
         return np.hypot(self.x - node.x, self.y - node.y)
@@ -57,17 +60,20 @@ class Node:
 
         return Force(Rx, Ry)
 
-    def add_displacement_x(self):
-        self.displacement[0] = True
-
-    def add_displacement_y(self):
-        self.displacement[1] = True
-
     def get_tag(self):
-        return Tag("node", nid=self._id, x=self.x, y=self.y, z=0)
+        tag = Tag("node", nid=self.id, x=self.x, y=self.y, z=0)
+
+        return tag
+
+    def get_selection_tag(self):
+        return
 
     def plot(self):
         plt.scatter([self.x], [self.y])
 
         # for force in self.forces:
         #     force.plot(self.x, self.y)
+
+#   <nodeselection name="Unnamed(6)">
+#     <node nid="16" />
+#   </nodeselection>

@@ -1,5 +1,6 @@
 from .profe import importa
 from .truss import Truss
+from .material import Material
 
 
 class Loads:
@@ -36,11 +37,12 @@ class Loads:
 
     @staticmethod
     def _make_beam(solid, node1_i, node2_i, elasticity, area):
-        node1 = solid.nodes[int(node1_i - 1)]
-        node2 = solid.nodes[int(node2_i - 1)]
+        node1 = solid.nodes[node1_i]
+        node2 = solid.nodes[node2_i]
 
         beam = solid.make_beam(node1, node2)
-        beam.define_material(elasticity, area)
+        material = Material(elasticity, area, str(beam.id))
+        beam.set_material(material)
 
     @staticmethod
     def _make_forces(solid, forces):
@@ -61,9 +63,9 @@ class Loads:
             node = solid.nodes[node_i]
 
             if restriction % 2 == 0:
-                node.add_displacement_x()
+                node.displacement.set_x()
             else:
-                node.add_displacement_y()
+                node.displacement.set_y()
 
     @staticmethod
     def _get_restrictions(restrictions):

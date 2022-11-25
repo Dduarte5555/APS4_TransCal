@@ -4,8 +4,13 @@ class Tag:
         self.attr = kwargs
         self.child = []
 
-    def append_tree(self, child):
-        self.child.extend(child)
+    def append_child(self, child):
+        self.child.append(child)
+
+        return self
+
+    def append_tree(self, tree):
+        self.child.extend(tree)
 
         return self
 

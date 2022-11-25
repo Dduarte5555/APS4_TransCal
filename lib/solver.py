@@ -13,19 +13,22 @@ class GaussSeidel_Solver(Solver):
         x = np.zeros_like(y, dtype=np.float64)
         conv = [False] * y.shape[0]
 
-        i = 0
-        while not all(conv):
-            if conv[i]:
-                continue
+        i = -1
+        try:
+            while not all(conv):
+                i = (i + 1) % x.shape[0]
 
-            xi = GaussSeidel_Solver._xi(k, x, y, i)
+                if conv[i]:
+                    continue
 
-            if Solver._get_err(x[i], xi) < tol:
-                conv[i] = True
+                xi = GaussSeidel_Solver._xi(k, x, y, i)
 
-            x[i] = xi
+                if Solver._get_err(x[i], xi) < tol:
+                    conv[i] = True
 
-            i = (i + 1) % x.shape[0]
+                x[i] = xi
+        except KeyboardInterrupt:
+            pass
 
         return x
 

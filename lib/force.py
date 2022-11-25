@@ -1,10 +1,25 @@
 # from matplotlib import pyplot as plt
 
+from .tag import Tag
+
 
 class Force():
+    selection:int
+
     def __init__(self, x: float, y: float):
         self.x = x
         self.y = y
+
+    def get_tag(self):
+        tag = Tag("force", selection=self.selection)
+        
+        tag.append_tree([
+            Tag("x").append_tree([self.x]),
+            Tag("y").append_tree([self.y]),
+            Tag("z").append_tree([0]),
+        ])
+
+        return tag
 
     # def plot(self, x0: float, y0: float):
     #     norm = np.linalg.norm((self.x, self.y))
