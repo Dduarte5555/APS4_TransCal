@@ -29,25 +29,42 @@ class Loads:
     @staticmethod
     def _make_beams(solid, beams):
         for node1_i, node2_i, elasticity, area in beams:
-            node1 = solid.nodes[int(node1_i - 1)]
-            node2 = solid.nodes[int(node2_i - 1)]
+            node1_i = int(node1_i - 1)
+            node2_i = int(node2_i - 1)
 
-            beam = solid.make_beam(node1, node2)
-            beam.define_material(elasticity, area)
+            Loads._make_beam(solid, node1_i, node2_i, elasticity, area)
+
+    @staticmethod
+    def _make_beam(solid, node1_i, node2_i, elasticity, area):
+        node1 = solid.nodes[int(node1_i - 1)]
+        node2 = solid.nodes[int(node2_i - 1)]
+
+        beam = solid.make_beam(node1, node2)
+        beam.define_material(elasticity, area)
 
     @staticmethod
     def _make_forces(solid, forces):
-        forces = forces.T[0]
+        for node, fx, fy in Loads._get_forces(solid, forces):
+            node.apply_force(fx, fy)
 
-        for node_i, (fx, fy) in enumerate(zip(forces.T[::2], forces.T[1::2])):
-            solid.nodes[node_i].apply_force(fx, fy)
+    @staticmethod
+    def _get_forces(solid, forces):
+        forces_ = forces.T[0]
+        zip_xy = zip(forces_.T[::2], forces_.T[1::2])
+
+        return ((solid.nodes[node_i], fx, fy) for node_i, (fx, fy) in enumerate(zip_xy))
 
     @staticmethod
     def _make_restrictions(solid, restrictions):
-        for node_i, direction in enumerate(restrictions):
+        for restriction in Loads._get_restrictions(restrictions):
+            node_i = restriction // 2
             node = solid.nodes[node_i]
 
-            if direction in (1, 3):
+            if restriction % 2 == 0:
                 node.add_displacement_x()
-            if direction in (2, 3):
+            else:
                 node.add_displacement_y()
+
+    @staticmethod
+    def _get_restrictions(restrictions):
+        return (int(restriction) for restriction in restrictions.T[0])
