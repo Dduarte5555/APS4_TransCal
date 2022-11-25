@@ -22,8 +22,8 @@ class Truss:
 
         for beam in self.beams:
             Ke = beam.rigidity
-            i1 = beam.node1.id - 1
-            i2 = beam.node2.id - 1
+            i1 = (beam.node1.id - 1) * 2
+            i2 = (beam.node2.id - 1) * 2
 
             K[i1:i1+2, i1:i1+2] += Ke[0:2, 0:2]
             K[i1:i1+2, i2:i2+2] += Ke[0:2, 2:4]
