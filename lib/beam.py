@@ -44,16 +44,14 @@ class Beam:
     def rigidity(self):
         rigidity = self.elasticity * self.area / self.length
         s, c = self.sin_cos
-        a = [ [c, 0],
-              [s, 0],
-              [0, c],
-              [0, s], ]
-        b = [ [1, -1],
-              [-1, 1], ]
-        c = [ [c, s, 0, 0],
-              [0, 0, c, s], ]
+        a = np.array([ [c, s, 0, 0],
+                       [0, 0, c, s], ])
+        b = np.array([ [1.0, -1.0],
+                       [-1.0, 1.0], ])
 
-        return np.matmul(a, rigidity * np.matmul(b, c))
+        salkdjsad = np.matmul(a.T * rigidity,  b)
+
+        return np.matmul(salkdjsad, a)
 
     def define_material(self, elasticity:float, area:float):
         self.elasticity = elasticity
