@@ -2,4 +2,4 @@
 
 Grupo da Aps4: Diogo Duarte, Jorás Custodio, Luciano Felix.
 
-Objetivo:
+Objetivo: Desenvolver um software para análise de treliças planas.
