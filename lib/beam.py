@@ -30,16 +30,6 @@ class Beam:
 
         return dy / l, dx / l
 
-    def get_deformation(self, u1, u2):
-        s, c = self.sin_cos
-        vec = [-c, -s, c, s]
-        pos = [u1[0], u1[1], u2[0], u2[1]]
-
-        return np.dot(vec, pos) / self.length
-
-    def get_tension(self):
-        return self.material.elasticity * self.deformation
-
     @property
     def rigidity(self):
         rigidity = self.material.elasticity * self.material.area / self.length
@@ -49,9 +39,14 @@ class Beam:
         b = np.array([ [1.0, -1.0],
                        [-1.0, 1.0], ])
 
-        salkdjsad = np.matmul(a.T * rigidity,  b)
+        return np.matmul(np.matmul(a.T * rigidity,  b), a)
 
-        return np.matmul(salkdjsad, a)
+    def get_deformation(self, u1, u2):
+        s, c = self.sin_cos
+        vec = [-c, -s, c, s]
+        pos = [u1[0], u1[1], u2[0], u2[1]]
+
+        return np.dot(vec / self.length, pos)
 
     def set_material(self, material:Material):
         material.id = self.id

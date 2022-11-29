@@ -18,23 +18,6 @@ class Truss:
         self.beams = []
         self.material = None
 
-    @property
-    def rigidity(self):
-        size = len(self.nodes)
-        K = np.zeros((size * 2, size * 2))
-
-        for beam in self.beams:
-            Ke = beam.rigidity
-            i1 = (beam.node1.id - 1) * 2
-            i2 = (beam.node2.id - 1) * 2
-
-            K[i1:i1+2, i1:i1+2] += Ke[0:2, 0:2]
-            K[i1:i1+2, i2:i2+2] += Ke[0:2, 2:4]
-            K[i2:i2+2, i1:i1+2] += Ke[2:4, 0:2]
-            K[i2:i2+2, i2:i2+2] += Ke[2:4, 2:4]
-
-        return K
-
     def add_node(self, node:Node):
         last_id = self.nodes[-1].id if len(self.nodes) > 0 else 0
 
@@ -77,9 +60,6 @@ class Truss:
     def set_material(self, material:Material):
         material.id = 1
         self.material = material
-
-    def solve(self):
-        pass
 
     def plot(self):
         for beam in self.beams:
